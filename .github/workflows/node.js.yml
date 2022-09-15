@@ -11,7 +11,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,24 +19,26 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - name: Checkout source code.
-    - uses: actions/checkout@v2
-    
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - name: create env file
-      working-directory: ./
-      run: |
-        pwd
-        touch .env
-        # To do
-        cat .env
-            
-    - name: build server files
-      working-directory: ./
-      run: |
-        yarn
-        yarn run build
+      - name: Checkout source code.
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: create env file
+        working-directory: ./
+        run: |
+          pwd
+          touch .env
+          # To do
+          cat .env
+      - run: npm ci
+      - run: npm test
+
+      - name: build server files
+        working-directory: ./
+        run: |
+          yarn
+          yarn run build
