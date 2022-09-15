@@ -34,10 +34,8 @@ jobs:
         pwd
         touch .env
         # To do
-        
-    - run: npm ci
-    - run: npm test
-    
+        cat .env
+            
     - name: build server files
       working-directory: ./
       run: |
