@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Runnerbe Service</title>
+
+    <!-- Custom fonts for this template -->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this page -->
+    <link href="vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+
+        <!-- Content Wrapper -->
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main Content -->
+            <div id="content">
+
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-2 text-gray-800">Runnerbe Admin</h1>
+                    <p class="mb-4">Runnerbe 서비스의 악성 유저를 차단하기 위한 신고 관리 페이지입니다.</p>
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Runnerbe 신고 목록</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <!--To do : API로 json 가져와서 Table에 mapping-->
+                                    <thead>
+                                        <tr>                                           
+                                            <th>게시글 인덱스</th>
+                                            <th>피신고자 인덱스</th>
+                                            <th>피신고자 닉네임</th>
+                                            <th>신고 일자</th>                                                                                 
+                                            <th>내용</th> 
+                                            <th>정지 처리 여부 (정지/무효)</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th>게시글 인덱스</th>                                           
+                                            <th>피신고자 인덱스</th>
+                                            <th>피신고자 닉네임</th>
+                                            <th>신고 일자</th>                                                                                 
+                                            <th>내용</th> 
+                                            <th>정지 처리 여부 (정지/무효)</th>
+                                        </tr>
+                                    </tfoot>
+
+                                    <tbody id="myTable"></tbody>
+                                    
+                                </table>
+                                <script>                                   
+                                
+                                async function go(){
+                                    /*
+                                    fetch를 한 후에 날아오는 response 객체는 모든 header가 도착하자마자 우리에게 주어짐
+                                    body는 아직 도착을 안 했기 때문에 Pending 상태의 Promise가 반환되는 것.
+                                    */
+                                    let jsonResult;
+                                    async function getReportList() {
+
+                                        const response = await fetch(
+                                           "http://localhost:3000/admin/postings/reportList",
+                                           {
+                                             method: "GET",
+                                             headers: {
+                                               "Content-Type": "application/json",
+                                             },
+                                           })
+
+                                        jsonResult = await response.json();
+                                    }
+                                    
+                                    await getReportList()
+                                    await buildTable(jsonResult)
+                                }
+                                go()
+                                    
+                        
+                                    function buildTable(data){
+                                        console.log("data : ", data);
+		                                    var table = document.getElementById('myTable')
+
+		                                    for (var i = 0; i < data.length; i++){
+                                                    var row = `<tr>       
+                                                                    <td>${data[i].postId}</td>                                                                                                                                                                                                    
+                                                                    <td>${data[i].reportedUserId}</td>
+                                                                    <td>${data[i].reportedUserName}</td>  
+                                                                    <td>${data[i].createdAt}</td>  
+                                                                    <td>${data[i].contents}</td> 
+                                                                    <td> 
+                                                                        <form>
+                                                                            <div class="btn-group" role="group" aria-label="Basic example">
+                                                                              <button type="button" class="btn btn-primary" id="Y" onclick="button1_click(${data[i].postId});">정지</button>     
+                                                                              <button type="button" class="btn btn-primary" id="N" onclick="button2_click(${data[i].postId});">무효</button>                            
+                                                                            </div>
+                                                                        </form>
+                                                                        
+                                                                    </td>
+                                                            </tr>`
+                                                    table.innerHTML += row
+                                                }
+                                        }
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; runnerbe 2022</span>
+                    </div>
+                </div>
+            </footer>
+            <!-- End of Footer -->
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Logout Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="login.html">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript-->
+    <script type="text/javascript" src="vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script type="text/javascript" src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script type="text/javascript" src="js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script type="text/javascript" src="vendor/datatables/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script type="text/javascript" src="js/demo/datatables-demo.js"></script>
+
+    <!-- jquery -->
+    <script type="text/javascript" src https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js ></script>
+
+    <script> 
+    async function button1_click(postId){
+        alert("정지 처리 완료");
+        const response = await fetch("http://localhost:3000/admin/report?whether=Y", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                postId: postId
+            }),
+          })
+            .then((response) => response.json());
+        location.reload(true);
+    } 
+
+    async function button2_click(postId){
+        alert("신고 무효 처리 완료");
+        const response = await fetch("http://localhost:3000/admin/report?whether=N", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                postId: postId
+            }),
+          })
+            .then((response) => response.json());
+        location.reload(true);
+        } 
+    </script>
+</body>
+
+</html>
